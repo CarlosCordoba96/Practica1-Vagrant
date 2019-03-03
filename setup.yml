@@ -2,28 +2,27 @@
 - hosts: default
   remote_user: vagrant
   become: yes
-  tasks:
-    
+  tasks: 
+  
+# Step 1: install the CDH 5 "1-click Install" package:
+    - name: Step 1 - Install CDH5 1-click Install
+      apt:
+        deb: http://archive.cloudera.com/cdh5/one-click-install/precise/amd64/cdh5-repository_1.0_all.deb
 
-    - name: Añadir repositorio de cloudera Hadoop
-      apt_repository: repo="deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh precise-cdh5 contrib" 
-      state: present
-
-    - name: Añadir repositorio src de cloudera Hadoop
-      apt_repository: repo="deb-src http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh precise-cdh5 contrib" 
-      state: present
-
-    - name: Installation Step 2 - Add a Repository Key
+# Step 2: add a repository key. This key enables you to verify that you are downloading genuine packages.
+    - name: Step 2 - Add a Repository Key
       apt_key:
         url: "https://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key"
-    - name: Apt-get-Update
-      apt: update_cache=yes 
 
+# Step 3: add a repository key. This key enables you to verify that you are downloading genuine packages. 
+    - name: Step 3 - Install hadoop
+      apt:
+        update_cache: yes
+        name: hadoop-0.20-conf-pseudo
+
+# Install Oracle Java Development Kit
     - name: Install JDK and JRE
       apt:
-        name: "{{ packages }}"
-      vars:
-        packages:
-        - openjdk-7-jre
-        - openjdk-7-jdk
+        name: openjdk-7-jre
+        name: openjdk-7-jdk
 
