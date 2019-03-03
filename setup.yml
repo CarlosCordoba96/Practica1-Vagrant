@@ -1,0 +1,11 @@
+---
+- hosts: default
+  remote_user: vagrant
+  become: yes
+  tasks:
+    - name: Install bitnami
+      command: /vagrant/bitnami-joomla-3.1.5-2-linux-x64-installer.run --mode unattended
+
+    - name: Start bitnami
+      command: /opt/joomla-3.1.5-2/ctlscript.sh start
+
