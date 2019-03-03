@@ -3,14 +3,27 @@
   remote_user: vagrant
   become: yes
   tasks:
+    
+
     - name: Añadir repositorio de cloudera Hadoop
-      apt_repository: repo="deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/ trusty-cdh5 contrib" 
+      apt_repository: repo="deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh precise-cdh5 contrib" 
       state: present
 
     - name: Añadir repositorio src de cloudera Hadoop
-      apt_repository: repo="deb-src http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/ trusty-cdh5 contrib" 
+      apt_repository: repo="deb-src http://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh precise-cdh5 contrib" 
       state: present
 
+    - name: Installation Step 2 - Add a Repository Key
+      apt_key:
+        url: "https://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key"
     - name: Apt-get-Update
       apt: update_cache=yes 
+
+    - name: Install JDK and JRE
+      apt:
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - openjdk-7-jre
+        - openjdk-7-jdk
 
