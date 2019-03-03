@@ -1,2 +1,0 @@
-ANSIBLE: https://docs.ansible.com/ansible/latest/modules/modules_by_category.html
-TUTORIAL: https://www.cloudera.com/documentation/cdh/5-1-x/CDH5-Installation-Guide/cdh5ig_cdh5_install.html
