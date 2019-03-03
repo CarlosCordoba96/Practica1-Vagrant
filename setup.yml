@@ -3,9 +3,14 @@
   remote_user: vagrant
   become: yes
   tasks:
-    - name: Install bitnami
-      command: /vagrant/bitnami-joomla-3.1.5-2-linux-x64-installer.run --mode unattended
+    - name: Añadir repositorio de cloudera Hadoop
+      apt_repository: repo="deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/ trusty-cdh5 contrib" 
+      state: present
 
-    - name: Start bitnami
-      command: /opt/joomla-3.1.5-2/ctlscript.sh start
+    - name: Añadir repositorio src de cloudera Hadoop
+      apt_repository: repo="deb-src http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/ trusty-cdh5 contrib" 
+      state: present
+
+    - name: Apt-get-Update
+      apt: update_cache=yes 
 
