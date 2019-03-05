@@ -4,27 +4,44 @@
   hosts: default
   remote_user: vagrant
   tasks: 
-    - 
+
+    # Step 1: install the CDH 5 "1-click Install" package:
+    - name: "Step 1 - Install CDH5 1-click Install"
       apt: 
         deb: "http://archive.cloudera.com/cdh5/one-click-install/precise/amd64/cdh5-repository_1.0_all.deb"
-      name: "Step 1 - Install CDH5 1-click Install"
-    - 
+
+    # Step 2: add a repository key. This key enables you to verify that you are downloading genuine packages.
+    - name: "Step 2 - Add a Repository Key"
       apt_key: 
         url: "https://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key"
-      name: "Step 2 - Add a Repository Key"
-    - 
+    
+    # Update cache for installing correctly to install the next pacakges
+    - name: "Update cache"
       apt: update_cache=yes
-      name: Apt-get-Update
-    - 
+
+    # Install JDK and JRE. It is a pre-requisite so that we can deploy cdh5
+    - name: "Install JDK and JRE"
       apt: 
-        name: "{{ packages }}"
-      name: "Install JDK and JRE"
-      vars: 
-        packages: 
-          - openjdk-7-jre
-          - openjdk-7-jdk
-    - 
-      apt: 
+        name: openjdk-7-jre
+        name: openjdk-7-jdk
+
+    # Step 3: install hadoop
+    - name: "Step 3 - Install hadoop"
+      apt:
         name: hadoop-0.20-conf-pseudo
         update_cache: true
-      name: "Step 3 - Install hadoop"
+
+    # Deply hadoop
+    # Step 1: start hadoop - Format the NameNode
+    - name: "Format the NameMode"
+      command: sudo -u hdfs namemode -format
+      become: true
+      become_method: su
+      become_user: root
+
+    # Step 2: start HDFS
+    - name: "Start HDFS"
+      command: for x in `cd /etc/init.d ; ls hadoop-hdfs-*` ; do sudo service $x start ; done
+      become: true
+      become_method: su
+      become_user: root
