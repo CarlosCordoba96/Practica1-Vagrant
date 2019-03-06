@@ -15,69 +15,21 @@
       apt_key: 
         url: "https://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key"
     
-    # Update cache for installing correctly to install the next pacakges
-    - name: "Update cache"
-      apt: update_cache=yes
-
-    # Install JDK and JRE. It is a pre-requisite so that we can deploy cdh5
-    - name: "Install JDK and JRE"
+    - name: Install hadoop and update repo cache
       apt: 
-        name: "{{ packages }}"
-      vars:
-        packages:
-          - openjdk-7-jre
-          - openjdk-7-jdk
-
-    # Step 3: install hadoop
-    - name: "Step 3 - Install hadoop"
-      apt:
         name: hadoop-0.20-conf-pseudo
-        update_cache: true
+        update_cache: yes
 
-    # Deploy hadoop
-    # Step 1: start hadoop - Format the NameNode
-    - name: "Format the NameMode"
-      command: sudo -u hdfs namemode -format
-      become: true
-      become_method: su
-      become_user: root
+    - name: Install Java jdk
+      apt: 
+        name: openjdk-7-jdk
 
-    # Step 2: start HDFS
-    - name: "Start HDFS"
-      command: for x in `cd /etc/init.d ; ls hadoop-hdfs-*` ; do sudo service $x start ; done
-      become: true
-      become_method: su
-      become_user: root
-      
-      # Step 3: create the /tmp directory
-    - name: "create /tmp directory"
-      command: "{{ items }}"
-      vars:
-        items:
-          - sudo -u hdfs hadoop fs -mkdir -p /tmp
-          - sudo -u hdfs hadoop fs -chmod -R 1777 /tmp
-      become: true
-      become_method: su
-      become_user: root
-      
-      # Step 4: create the MapReduce system directories
-    - name: "create MapReduce system"
-      command: "{{ items }}"
-      vars:
-        items:
-          - sudo -u hdfs hadoop fs -mkdir -p /var/lib/hadoop-hdfs/cache/mapred/mapred/staging
-          - sudo -u hdfs hadoop fs -chmod 1777 /var/lib/hadoop-hdfs/cache/mapred/mapred/staging
-          - sudo -u hdfs hadoop fs -chown -R mapred /var/lib/hadoop-hdfs/cache/mapred
-      become: true
-      become_method: su
-      become_user: root
-      
-      # Step 5: verify the HDFS File Structure
-    - name: "verify HDFS File Structure"
-      command: "{{ items }}"
-      vars:
-        items:
-          - sudo -u hdfs hadoop fs -ls -R /
-      become: true
-      become_method: su
-      become_user: root
+
+    - name: Verify Hadoop
+      command: dpkg -L hadoop-0.20-conf-pseudo
+
+    - name: Format NodeName
+      command: hdfs namenode -format
+
+    - name: Start HDFS
+      shell: 'for x in `cd /etc/init.d ; ls hadoop-hdfs-*` ; do sudo service $x start ; done'
