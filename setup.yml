@@ -56,12 +56,11 @@
     - name: "Creation of MapReduce directories"
       shell: 'sudo -u hdfs hadoop fs -mkdir -p /var/lib/hadoop-hdfs/cache/mapred/mapred/staging'
 
-    # Step 4.1: create the MapReduce system directories
+    # Step 4.1: create the MapReduce system directories (Cont)
     - name: "Creation of permisions MapReduce directories"
       shell: 'sudo -u hdfs hadoop fs -chmod 1777 /var/lib/hadoop-hdfs/cache/mapred/mapred/staging'
 
-
-    # Step 4.2: create the MapReduce system directories
+    # Step 4.2: create the MapReduce system directories (Cont)
     - name: "Creation of onwership MapReduce directories"
       shell: 'sudo -u hdfs hadoop fs -chown -R mapred /var/lib/hadoop-hdfs/cache/mapred'
 
@@ -72,3 +71,11 @@
     # Step 6: start MapReduce
     - name: "Start MapReduce"
       shell: 'for x in `cd /etc/init.d ; ls hadoop-0.20-mapreduce-*` ; do sudo service $x start ; done'
+
+    # Step 7: Create user directories
+    - name: "Creation of user's directories"
+      shell: 'sudo -u hdfs hadoop fs -mkdir -p /user/$USER'
+
+    # Step 7.1: Create user directories (Cont)
+    - name: "Change the owner of the folder"
+      shell: 'sudo -u hdfs hadoop fs -chown $USER /user/$USER'
