@@ -1,10 +1,11 @@
 --- 
 - 
-  become: true
   hosts: default
   remote_user: vagrant
-  tasks: 
+  become: yes
+  tasks:
 
+    # Installing CDH5 -------------------------------------------------------------------------------------
     # Step 1: install the CDH 5 "1-click Install" package:
     - name: "Step 1 - Install CDH5 1-click Install"
       apt: 
@@ -15,21 +16,49 @@
       apt_key: 
         url: "https://archive.cloudera.com/cdh5/ubuntu/precise/amd64/cdh/archive.key"
     
-    - name: Install hadoop and update repo cache
+    # Install hadoop in pseudo-distributed mode
+    - name: "Install hadoop and update repo cache"
       apt: 
         name: hadoop-0.20-conf-pseudo
         update_cache: yes
 
-    - name: Install Java jdk
+    # Install JDK and JRE. It is a pre-requisite so that we can deploy cdh5
+    - name: "Install JDK and JRE"
       apt: 
-        name: openjdk-7-jdk
-
-
-    - name: Verify Hadoop
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - openjdk-7-jre
+          - openjdk-7-jdk
+    
+    # Starting Hadoop -------------------------------------------------------------------------------------
+    # Verify if hadoop is in our virtual system"
+    - name: "Verify hadoop-0.20-conf-pseudo packages"
       command: dpkg -L hadoop-0.20-conf-pseudo
 
-    - name: Format NodeName
-      command: hdfs namenode -format
+    # Step 1: format the NameMode
+    - name: "Format NodeName"
+      shell: 'sudo -u hdfs hdfs namenode -format'
 
-    - name: Start HDFS
+    # Step 2: start HDFS
+    - name: "Start HDFS"
       shell: 'for x in `cd /etc/init.d ; ls hadoop-hdfs-*` ; do sudo service $x start ; done'
+
+    # Step 3: create the /tmp directory
+    - name: "Creation of /tmp directory"
+      shell: 'sudo -u hdfs hadoop fs -mkdir -p /tmp'
+      shell: 'sudo -u hdfs hadoop fs -chmod -R 1777 /tmp'
+
+    # Step 4: create the MapReduce system directories
+    - name: "Creation of MapReduce directories"
+      shell: 'sudo -u hdfs hadoop fs -mkdir -p /var/lib/hadoop-hdfs/cache/mapred/mapred/staging'
+      shell: 'sudo -u hdfs hadoop fs -chmod 1777 /var/lib/hadoop-hdfs/cache/mapred/mapred/staging'
+      shell: 'sudo -u hdfs hadoop fs -chown -R mapred /var/lib/hadoop-hdfs/cache/mapred'
+
+    # Step 5: verify the HDFS File Structure
+    - name: "Verification of HDFS File Structure"
+      command: -u hdfs hadoop fs -ls -R /
+
+    # Step 6: start MapReduce
+    - name: "Start MapReduce"
+      shell: 'for x in `cd /etc/init.d ; ls hadoop-0.20-mapreduce-*` ; do sudo service $x start ; done'
