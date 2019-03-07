@@ -13,4 +13,4 @@ $ hadoop fs -ls input
 
 * Miembros:
   * Carlos Córdoba Ruiz
-  * Cristian Gómez Portessudo -u hdfs hadoop fs -mkdir -p /user/joe
+  * Cristian Gómez Portes
