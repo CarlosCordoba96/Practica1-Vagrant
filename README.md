@@ -21,7 +21,7 @@ Finalmente, para leer el resultado de cualquier archivo de la carpeta *output* s
 $ hadoop fs -cat output/[file] | head
 ```
 
-Es importante recalcar que *file* se puede conocer ejecutando ```hadoop fs -ls output```, probar con el archivo ```part-00000```, que se debe crear en la carpeta *output*.
+Es importante recalcar que *file* se puede conocer ejecutando ```hadoop fs -ls output```. Como ejemplo, se podría ejecutar ```$ hadoop fs -cat output/part-00000 | head```, donde ```part-00000``` es uno de los archivos que hay en el directorio *output*.
 
 * Miembros:
   * Carlos Córdoba Ruiz
