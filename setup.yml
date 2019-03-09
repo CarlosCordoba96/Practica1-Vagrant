@@ -74,8 +74,8 @@
 
     # Step 7: Create user directories
     - name: "Creation of user's directories"
-      shell: 'sudo -u hdfs hadoop fs -mkdir -p /user/$USER'
+      shell: 'sudo -u hdfs hadoop fs -mkdir -p /user/vagrant'
 
     # Step 7.1: Create user directories (Cont)
     - name: "Change the owner of the folder"
-      shell: 'sudo -u hdfs hadoop fs -chown $USER /user/$USER'
+      shell: 'sudo -u hdfs hadoop fs -chown vagrant /user/vagrant'
